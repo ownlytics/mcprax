@@ -1,0 +1,55 @@
+{
+  "name": "@ownlytics/mcprax",
+  "version": "0.1.0",
+  "description": "A command-line tool for managing Model Control Protocol (MCP) servers and racks for Claude Desktop",
+  "main": "lib/index.js",
+  "bin": {
+    "rax": "./bin/rax.js"
+  },
+  "scripts": {
+    "test": "echo \"Testing not configured yet\" && exit 0",
+    "mcptix": "mcptix start",
+    "lint": "echo \"No linting configured\" && exit 0",
+    "prepare": "npm run lint",
+    "postinstall": "node lib/scripts/postinstall.js",
+    "test:global": "node test/test-global.js"
+  },
+  "keywords": [
+    "cli",
+    "mcp",
+    "claude",
+    "rack",
+    "server",
+    "management",
+    "anthropic"
+  ],
+  "author": "Ownlytics",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "preferGlobal": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ownlytics/mcprax.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ownlytics/mcprax/issues"
+  },
+  "homepage": "https://github.com/ownlytics/mcprax#readme",
+  "dependencies": {
+    "@ownlytics/mcptix": "^0.1.21",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "conf": "^10.2.0",
+    "fs-extra": "^11.1.1",
+    "inquirer": "^8.2.5",
+    "ora": "^5.4.1",
+    "prompts": "^2.4.2",
+    "update-notifier": "^5.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.40.0",
+    "jest": "^29.5.0"
+  }
+}
