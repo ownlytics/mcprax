@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 
+// Simple version output for -v/--version flags
+if (process.argv.length === 3 &&
+    (process.argv[2] === '-v' ||
+     process.argv[2] === '--version' ||
+     process.argv[2] === '-V')) {
+  const pkg = require('../package.json');
+  console.log(pkg.version);
+  process.exit(0);
+}
+
 const { program } = require('commander');
 const chalk = require('chalk');
 const updateNotifier = require('update-notifier');
