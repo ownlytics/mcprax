@@ -1,6 +1,8 @@
-# mcprax - MCP Server & Rack Manager
+# mcprax - Model Control Protocol Rack Manager
 
-A command-line tool for managing Model Control Protocol (MCP) servers and collections of servers called "racks" for Claude Desktop.
+![Version](https://img.shields.io/badge/version-0.1.4-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+
+A powerful CLI tool for managing and deploying Model Control Protocol (MCP) servers to Claude Desktop as configurable "racks" - streamlining your development workflow.
 
 ## Installation
 
@@ -12,20 +14,41 @@ npm install -g @ownlytics/mcprax
 
 This will make the `rax` command available globally.
 
+## What is mcprax?
+
+mcprax (pronounced "mcp-racks") allows you to:
+
+1. Define multiple MCP server configurations
+2. Group these servers into "racks" (collections)
+3. Switch between different racks
+4. Apply rack configurations to Claude Desktop
+
+This approach is similar to version managers like nvm, rvm, and conda, allowing you to maintain multiple server configurations and easily switch between them.
+
 ## Quick Start
 
 ```bash
-# Create a default rack
-rax create default
+# Create a new rack for development
+rax create dev-environment
 
-# Create a server configuration
-rax server create api node api.js
+# Create an MCP server configuration
+rax server create api-server '{"command": "node", "args": ["api.js"], "env": {"PORT": "3000"}}'
 
-# Mount the server to the active rack
-rax mount api
+# Or create a server with direct command arguments
+rax server create db-server node db-server.js --port 5432
 
-# Apply the configuration to Claude Desktop
+# Set the rack as active
+rax use dev-environment
+
+# Mount servers to the active rack
+rax mount api-server
+rax mount db-server
+
+# Apply the rack to Claude Desktop
 rax apply
+
+# Verify your configuration
+rax mounted
 ```
 
 ## Commands
@@ -40,10 +63,10 @@ rax apply
 
 ### Server Management
 
-- `rax server create <servername> <command> [args...]` - Create a new server configuration
+- `rax server create <servername> [config]` - Create a new server configuration
+  - `config` can be a JSON string, path to JSON file, or command + args
 - `rax server list` - List available servers
 - `rax server show <servername>` - Show details of a server configuration
-- `rax server edit <servername>` - Edit a server configuration
 - `rax server delete <servername>` - Delete a server configuration
 
 ### Rack-Server Operations
@@ -55,8 +78,157 @@ rax apply
 ### Configuration Application
 
 - `rax apply` - Apply active rack to Claude Desktop configuration
+  - Use `--force` to apply even if rack has no servers
+  - Use `--yes` to skip confirmation prompts
 
-## Configuration
+## MCP Server Configuration
+
+MCP servers in Claude Desktop run background server processes that Claude can connect to. mcprax provides a simple way to manage these server configurations.
+
+### Server Configuration Format
+
+```json
+{
+  "name": "my-api",
+  "command": "node",
+  "args": ["server.js", "--port", "3000"],
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "disabled": false,
+  "alwaysAllow": ["fetch", "readFile"]
+}
+```
+
+#### Configuration Fields
+
+- `name` - Identifier for the server
+- `command` - Executable to run (node, python, etc.)
+- `args` - Array of command-line arguments
+- `env` - Environment variables to set
+- `disabled` - Whether the server is disabled by default
+- `alwaysAllow` - Array of operations to always allow for this server
+
+### Creating Server Configurations
+
+There are multiple ways to create a server configuration:
+
+#### Using JSON directly
+
+```bash
+rax server create python-api '{"command": "python", "args": ["-m", "http.server", "8000"]}'
+```
+
+#### Using command arguments
+
+```bash
+rax server create node-api node server.js --port 3000
+```
+
+#### Using interactive mode
+
+```bash
+rax server create interactive-server --interactive
+```
+
+#### From a JSON file
+
+```bash
+rax server create file-server path/to/server-config.json
+```
+
+## Rack Configuration
+
+A rack is a collection of server configurations. When applied, all servers in the rack are configured in Claude Desktop.
+
+```json
+{
+  "name": "development",
+  "servers": ["my-api", "database", "auth-service"],
+  "description": "Development environment with API and services"
+}
+```
+
+## How It Works
+
+mcprax manages:
+
+1. Server configurations (JSON files in `~/.mcprax/servers/`)
+2. Rack configurations (JSON files in `~/.mcprax/racks/`)
+3. Active rack tracking
+4. Claude Desktop configuration generation
+
+When you run `rax apply`, mcprax:
+
+1. Reads the active rack configuration
+2. Loads all server configurations in the rack
+3. Generates a Claude Desktop configuration file with all the server configurations
+4. Backs up the existing Claude Desktop configuration (if any)
+5. Writes the new configuration to Claude Desktop
+
+## Example Workflows
+
+### Development Environment Setup
+
+```bash
+# Create a development rack
+rax create development
+
+# Create API server
+rax server create api '{"command": "node", "args": ["api.js"], "env": {"DEBUG": "api:*"}}'
+
+# Create database server
+rax server create db '{"command": "docker", "args": ["compose", "up", "db"]}'
+
+# Activate and configure
+rax use development
+rax mount api
+rax mount db
+rax apply
+```
+
+### Multiple Environment Management
+
+```bash
+# Create multiple racks
+rax create development
+rax create testing
+rax create production
+
+# Add specific servers to each
+rax use development
+rax mount dev-api
+rax mount local-db
+
+rax use testing
+rax mount test-api
+rax mount test-db
+
+rax use production
+rax mount prod-api
+
+# Switch between environments
+rax use development
+rax apply
+
+# Later, switch to testing
+rax use testing
+rax apply
+```
+
+### Temporary Configuration Changes
+
+```bash
+# Remove a server temporarily
+rax unmount api
+rax apply
+
+# Add it back later
+rax mount api
+rax apply
+```
+
+## Storage Locations
 
 mcprax stores configurations in the user's home directory:
 
@@ -64,102 +236,39 @@ mcprax stores configurations in the user's home directory:
 ~/.mcprax/
 ├── active.json            # Tracks active rack
 ├── servers/               # Server definitions
-│   ├── server1.json
-│   └── server2.json
+│   ├── api.json
+│   └── database.json
 └── racks/                 # Rack definitions
-    ├── rack1.json
-    └── rack2.json
+    ├── development.json
+    └── production.json
 ```
 
-## Server Configuration
+The Claude Desktop configuration is stored at:
 
-Server configurations are JSON files with the following structure:
+- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- Linux: `~/.config/Claude/claude_desktop_config.json`
 
-```json
-{
-  "name": "api-server",
-  "command": "node",
-  "args": ["api.js", "--port", "3000"],
-  "env": {
-    "NODE_ENV": "development",
-    "DEBUG": "api:*"
-  },
-  "disabled": false,
-  "alwaysAllow": ["fetch", "readFile"]
-}
-```
+## Tips and Best Practices
 
-- `name`: The name of the server (must match the filename)
-- `command`: The command to run (e.g., node, python)
-- `args`: An array of command-line arguments
-- `env`: Environment variables to set when running the server
-- `disabled`: Whether the server is disabled (won't start when applying configuration)
-- `alwaysAllow`: (Optional) Array of operations that should always be allowed for this server
+1. **Name servers descriptively** - Use names that indicate function (e.g., "api-server", "auth-service")
+2. **Create purpose-specific racks** - Create different racks for different workflows
+3. **Use the `--force` flag with caution** - It will override configurations without confirmation
+4. **Check mounted servers before applying** - Use `rax mounted` to verify rack contents
+5. **Restart Claude Desktop after applying** - Changes may require a restart to take effect
 
-## Rack Configuration
+## Troubleshooting
 
-Rack configurations are JSON files with the following structure:
+### Common Issues
 
-```json
-{
-  "name": "development",
-  "servers": ["api-server", "database", "auth"],
-  "description": "Development environment with API and database servers"
-}
-```
+- **"No active rack set"** - Run `rax use <rackname>` to set an active rack
+- **"Server not found"** - Check if the server exists with `rax server list`
+- **Configuration not taking effect** - Restart Claude Desktop after applying changes
+- **Permission issues** - Ensure you have write access to the Claude Desktop configuration directory
 
-- `name`: The name of the rack (must match the filename)
-- `servers`: An array of server names to include in this rack
-- `description`: (Optional) A description of this rack
+### Configuration Backup
 
-## Cross-Platform Support
-
-mcprax works on:
-- macOS
-- Windows
-- Linux
-
-It automatically detects the correct location for the Claude Desktop configuration file based on your operating system.
-
-## Shell Completion
-
-mcprax installs shell completion scripts for Bash and Zsh during global installation. After installing, you may need to restart your terminal or source your shell configuration file for completions to take effect.
-
-## Examples
-
-```bash
-# Create a new rack for development
-rax create development
-
-# Create a Node.js API server configuration
-rax server create api-server node api.js --port 3000
-
-# Create a Python web server configuration
-rax server create python-server python -m http.server 8000
-
-# Set the development rack as active
-rax use development
-
-# Add servers to the active rack
-rax mount api-server
-rax mount python-server
-
-# Apply the configuration to Claude Desktop
-rax apply
-
-# List all available racks
-rax list
-
-# Show the active rack and its servers
-rax current
-rax mounted
-
-# Remove a server from the active rack
-rax unmount python-server
-
-# Apply the updated configuration
-rax apply
-```
+mcprax automatically creates backups of the Claude Desktop configuration before applying changes. Backups are stored in the same directory as the configuration file with a timestamp suffix.
 
 ## License
 
