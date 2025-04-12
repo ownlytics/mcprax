@@ -42,18 +42,18 @@ if (notifier.update) {
   console.log();
 }
 
-// ASCII art banner
-console.log(chalk.cyan(`
+// Ensure config directory exists
+ensureConfigDir();
+
+// Define ASCII art banner to use in help
+const asciiBanner = `
  ███    ███  ██████ ██████  ██████   █████  ██   ██
  ████  ████ ██      ██   ██ ██   ██ ██   ██  ██ ██
  ██ ████ ██ ██      ██████  ██████  ███████   ███
  ██  ██  ██ ██      ██      ██   ██ ██   ██  ██ ██
  ██      ██  ██████ ██      ██   ██ ██   ██ ██   ██
                                              v${pkg.version}
-`));
-
-// Ensure config directory exists
-ensureConfigDir();
+`;
 
 // Set up program
 program
@@ -63,6 +63,14 @@ program
 
 // Add commands
 commandRouter(program);
+
+// Override the help output to include the banner
+const originalHelp = program.help;
+program.help = function(cb) {
+  // Show the banner before help
+  console.log(chalk.cyan(asciiBanner));
+  return originalHelp.call(this, cb);
+};
 
 // Add examples section
 program.on('--help', () => {
