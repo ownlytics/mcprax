@@ -1,8 +1,8 @@
-# mcprax - Model Control Protocol Rack Manager
+# mcprax - Model Context Protocol Rack Manager
 
-![Version](https://img.shields.io/badge/version-0.1.6-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-0.1.7-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
-A powerful CLI tool for managing and deploying Model Control Protocol (MCP) servers to Claude Desktop as configurable "racks" - streamlining your development workflow.
+A powerful CLI tool for managing and deploying Model Context Protocol (MCP) servers to Claude Desktop as configurable "racks" - streamlining your development workflow.
 
 ## Installation
 
@@ -16,7 +16,7 @@ This will make the `rax` command available globally.
 
 ## What is mcprax?
 
-mcprax (pronounced "mcp-racks") allows you to:
+mcprax (pronounced "mcp-racks") is a specialized tool for managing Model Context Protocol (MCP) servers in Claude Desktop. It allows you to:
 
 1. Define multiple MCP server configurations
 2. Group these servers into "racks" (collections)
@@ -29,20 +29,20 @@ This approach is similar to version managers like nvm, rvm, and conda, allowing 
 
 ```bash
 # Create a new rack for development
-rax create dev-environment
+rax create ai-tools-rack
 
-# Create an MCP server configuration
-rax server create api-server '{"command": "node", "args": ["api.js"], "env": {"PORT": "3000"}}'
+# Create an MCP server for filesystem access
+rax server create filesystem '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/username/Documents", "/Users/username/Projects"]}'
 
-# Or create a server with direct command arguments
-rax server create db-server node db-server.js --port 5432
+# Create a GitHub MCP server
+rax server create github-server '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"], "env": {"GITHUB_PERSONAL_ACCESS_TOKEN": "your-token-here"}}'
 
 # Set the rack as active
-rax use dev-environment
+rax use ai-tools-rack
 
 # Mount servers to the active rack
-rax mount api-server
-rax mount db-server
+rax mount filesystem
+rax mount github-server
 
 # Apply the rack to Claude Desktop
 rax apply
@@ -83,17 +83,17 @@ rax mounted
 
 ## MCP Server Configuration
 
-MCP servers in Claude Desktop run background server processes that Claude can connect to. mcprax provides a simple way to manage these server configurations.
+MCP (Model Context Protocol) servers allow AI systems like Claude to interact with external tools, data sources, and services through a standardized interface. mcprax helps you manage these server configurations for Claude Desktop.
 
 ### Server Configuration Format
 
 ```json
 {
-  "name": "my-api",
-  "command": "node",
-  "args": ["server.js", "--port", "3000"],
+  "name": "github-server",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-github"],
   "env": {
-    "NODE_ENV": "development"
+    "GITHUB_PERSONAL_ACCESS_TOKEN": "your-token-here"
   },
   "disabled": false,
   "alwaysAllow": ["fetch", "readFile"]
@@ -103,7 +103,7 @@ MCP servers in Claude Desktop run background server processes that Claude can co
 #### Configuration Fields
 
 - `name` - Identifier for the server
-- `command` - Executable to run (node, python, etc.)
+- `command` - The executable to run (npx, node, python, etc.)
 - `args` - Array of command-line arguments
 - `env` - Environment variables to set
 - `disabled` - Whether the server is disabled by default
@@ -116,25 +116,25 @@ There are multiple ways to create a server configuration:
 #### Using JSON directly
 
 ```bash
-rax server create python-api '{"command": "python", "args": ["-m", "http.server", "8000"]}'
+rax server create postgres-server '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-postgresql"], "env": {"PGUSER": "user", "PGPASSWORD": "password", "PGDATABASE": "mydb"}}'
 ```
 
 #### Using command arguments
 
 ```bash
-rax server create node-api node server.js --port 3000
+rax server create vector-db npx -y @modelcontextprotocol/server-chroma
 ```
 
 #### Using interactive mode
 
 ```bash
-rax server create interactive-server --interactive
+rax server create custom-server --interactive
 ```
 
 #### From a JSON file
 
 ```bash
-rax server create file-server path/to/server-config.json
+rax server create config-server path/to/server-config.json
 ```
 
 ## Rack Configuration
@@ -143,9 +143,9 @@ A rack is a collection of server configurations. When applied, all servers in th
 
 ```json
 {
-  "name": "development",
-  "servers": ["my-api", "database", "auth-service"],
-  "description": "Development environment with API and services"
+  "name": "ai-tools-rack",
+  "servers": ["filesystem", "github-server", "brave-search"],
+  "description": "Development environment with file access, GitHub, and search capabilities"
 }
 ```
 
@@ -168,65 +168,70 @@ When you run `rax apply`, mcprax:
 
 ## Example Workflows
 
-### Development Environment Setup
+### Basic MCP Server Setup
 
 ```bash
 # Create a development rack
-rax create development
+rax create mcp-basic
 
-# Create API server
-rax server create api '{"command": "node", "args": ["api.js"], "env": {"DEBUG": "api:*"}}'
-
-# Create database server
-rax server create db '{"command": "docker", "args": ["compose", "up", "db"]}'
+# Create filesystem server for local file access
+rax server create filesystem '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/Users/username/Documents"]}'
 
 # Activate and configure
-rax use development
-rax mount api
-rax mount db
+rax use mcp-basic
+rax mount filesystem
 rax apply
 ```
 
 ### Multiple Environment Management
 
 ```bash
-# Create multiple racks
-rax create development
-rax create testing
-rax create production
+# Create different racks for different purposes
+rax create coding-tools
+rax create data-analysis
+rax create content-creation
 
-# Add specific servers to each
-rax use development
-rax mount dev-api
-rax mount local-db
-
-rax use testing
-rax mount test-api
-rax mount test-db
-
-rax use production
-rax mount prod-api
-
-# Switch between environments
-rax use development
+# Configure coding tools rack
+rax use coding-tools
+rax mount github-server
+rax mount code-assistant
 rax apply
 
-# Later, switch to testing
-rax use testing
+# Later, switch to data analysis tools
+rax use data-analysis
+rax mount postgres-server
+rax mount csv-tools
 rax apply
 ```
 
-### Temporary Configuration Changes
+### Popular MCP Server Examples
 
-```bash
-# Remove a server temporarily
-rax unmount api
-rax apply
+Here are some examples of popular MCP servers you might want to configure:
 
-# Add it back later
-rax mount api
-rax apply
-```
+1. **Filesystem** - Provides file system access
+   ```bash
+   rax server create filesystem '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/directory"]}'
+   ```
+
+2. **GitHub** - Repository and code management
+   ```bash
+   rax server create github '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"], "env": {"GITHUB_PERSONAL_ACCESS_TOKEN": "your-token"}}'
+   ```
+
+3. **PostgreSQL** - Database access
+   ```bash
+   rax server create postgres '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-postgresql"], "env": {"PGUSER": "user", "PGPASSWORD": "pass", "PGDATABASE": "db", "PGHOST": "localhost"}}'
+   ```
+
+4. **Brave Search** - Web search capabilities
+   ```bash
+   rax server create brave-search '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-brave-search"], "env": {"BRAVE_API_KEY": "your-api-key"}}'
+   ```
+
+5. **Memory** - Persistent memory for LLMs
+   ```bash
+   rax server create memory '{"command": "npx", "args": ["-y", "@modelcontextprotocol/server-memory"]}'
+   ```
 
 ## Storage Locations
 
@@ -236,11 +241,11 @@ mcprax stores configurations in the user's home directory:
 ~/.mcprax/
 ├── active.json            # Tracks active rack
 ├── servers/               # Server definitions
-│   ├── api.json
-│   └── database.json
+│   ├── filesystem.json
+│   └── github-server.json
 └── racks/                 # Rack definitions
-    ├── development.json
-    └── production.json
+    ├── coding-tools.json
+    └── data-analysis.json
 ```
 
 The Claude Desktop configuration is stored at:
@@ -251,11 +256,12 @@ The Claude Desktop configuration is stored at:
 
 ## Tips and Best Practices
 
-1. **Name servers descriptively** - Use names that indicate function (e.g., "api-server", "auth-service")
+1. **Name servers descriptively** - Use names that indicate function (e.g., "github-server", "postgres-db")
 2. **Create purpose-specific racks** - Create different racks for different workflows
 3. **Use the `--force` flag with caution** - It will override configurations without confirmation
 4. **Check mounted servers before applying** - Use `rax mounted` to verify rack contents
 5. **Restart Claude Desktop after applying** - Changes may require a restart to take effect
+6. **Keep sensitive information secure** - API keys and tokens in MCP server configurations should be protected
 
 ## Troubleshooting
 
@@ -265,6 +271,7 @@ The Claude Desktop configuration is stored at:
 - **"Server not found"** - Check if the server exists with `rax server list`
 - **Configuration not taking effect** - Restart Claude Desktop after applying changes
 - **Permission issues** - Ensure you have write access to the Claude Desktop configuration directory
+- **MCP server errors** - Check Claude Desktop logs for server-specific error messages
 
 ### Configuration Backup
 
