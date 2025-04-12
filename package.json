@@ -12,6 +12,7 @@
     "lint": "echo \"No linting configured\" && exit 0",
     "prepare": "npm run lint",
     "postinstall": "node lib/scripts/postinstall.js",
+    "postuninstall": "node lib/scripts/postuninstall.js",
     "test:global": "node test/test-global.js"
   },
   "keywords": [
