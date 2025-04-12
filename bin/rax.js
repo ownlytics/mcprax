@@ -33,12 +33,13 @@ if (notifier.update) {
 }
 
 // ASCII art banner
-console.log(chalk.blue(`
-┌─────────────────────────────────┐
-│                                 │
-│  ${chalk.bold('mcprax - MCP Server & Rack Manager')}  │
-│                                 │
-└─────────────────────────────────┘
+console.log(chalk.cyan(`
+ ███    ███  ██████ ██████  ██████   █████  ██   ██
+ ████  ████ ██      ██   ██ ██   ██ ██   ██  ██ ██
+ ██ ████ ██ ██      ██████  ██████  ███████   ███
+ ██  ██  ██ ██      ██      ██   ██ ██   ██  ██ ██
+ ██      ██  ██████ ██      ██   ██ ██   ██ ██   ██
+                                             v${pkg.version}
 `));
 
 // Ensure config directory exists
