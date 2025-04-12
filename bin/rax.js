@@ -55,6 +55,11 @@ const asciiBanner = `
                                              v${pkg.version}
 `;
 
+// Flag to determine if we're showing help content
+const isShowingHelp = process.argv.includes('--help') ||
+                      process.argv.includes('-h') ||
+                      process.argv.length <= 2;
+
 // Set up program
 program
   .version(pkg.version, '-v, --version', 'Output the current version')
@@ -67,8 +72,10 @@ commandRouter(program);
 // Override the help output to include the banner
 const originalHelp = program.help;
 program.help = function(cb) {
-  // Show the banner before help
-  console.log(chalk.cyan(asciiBanner));
+  // Only show the banner if we're explicitly showing help
+  if (isShowingHelp) {
+    console.log(chalk.cyan(asciiBanner));
+  }
   return originalHelp.call(this, cb);
 };
 
