@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2025-04-14
+
+### Added
+
+- Enhanced version management system
+  - Added `version` command to display detailed version information
+  - Added `update` command to check for and apply updates
+  - Added configuration options for update notifications
+- Improved update notification system
+  - Fixed display issues with update notifications
+  - Added ability to enable/disable update notifications
+  - Added tracking for previously notified versions to prevent duplicate notifications
+- Added documentation for version management features
+
 ## [0.1.8] - 2025-04-14
 
 ### Fixed

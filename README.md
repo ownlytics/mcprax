@@ -1,6 +1,6 @@
 # mcprax - Model Context Protocol Rack Manager
 
-![Version](https://img.shields.io/badge/version-0.1.8-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-0.1.9-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
 A powerful CLI tool for managing and deploying Model Context Protocol (MCP) servers to Claude Desktop as configurable "racks" - streamlining your development workflow.
 
@@ -80,6 +80,16 @@ rax mounted
 - `rax apply` - Apply active rack to Claude Desktop configuration
   - Use `--force` to apply even if rack has no servers
   - Use `--yes` to skip confirmation prompts
+
+### Version Management
+
+- `rax version` - Display version information
+  - Use `--check` to check for updates
+- `rax update` - Check for and apply updates to mcprax
+  - Use `--check-only` to only check for updates, don't install
+  - Use `--force` to update even if already on latest version
+  - Use `--enable-notifications` to enable update notifications
+  - Use `--disable-notifications` to disable update notifications
 
 ## MCP Server Configuration
 
@@ -272,6 +282,25 @@ The Claude Desktop configuration is stored at:
 - **Configuration not taking effect** - Restart Claude Desktop after applying changes
 - **Permission issues** - Ensure you have write access to the Claude Desktop configuration directory
 - **MCP server errors** - Check Claude Desktop logs for server-specific error messages
+- **Update failures** - If `rax update` fails, you may need administrator privileges. Try running `npm install -g @ownlytics/mcprax` manually
+
+### Update Management
+
+mcprax includes built-in tools to help you stay up-to-date:
+
+```bash
+# Check the current version and available updates
+rax version --check
+
+# Update to the latest version
+rax update
+
+# Disable update notifications
+rax update --disable-notifications
+
+# Enable update notifications
+rax update --enable-notifications
+```
 
 ### Configuration Backup
 

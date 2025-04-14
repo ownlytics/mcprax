@@ -14,7 +14,7 @@ const { program } = require('commander');
 const chalk = require('chalk');
 const updateNotifier = require('update-notifier');
 const pkg = require('../package.json');
-const { ensureConfigDir } = require('../lib/config');
+const { ensureConfigDir, getUpdateSettings, setUpdateSettings } = require('../lib/config');
 const commandRouter = require('../lib/commands');
 const { firstTimeSetup } = require('../lib/scripts/first-run');
 
@@ -23,23 +23,32 @@ const { firstTimeSetup } = require('../lib/scripts/first-run');
   await firstTimeSetup();
 })();
 
-// Check for updates
-const notifier = updateNotifier({
-  pkg,
-  updateCheckInterval: 1000 * 60 * 60 * 24 // 1 day
-});
+// Check for updates only if enabled in settings
+const settings = getUpdateSettings();
+if (settings.checkEnabled !== false) { // Default to true if not set
+  const notifier = updateNotifier({
+    pkg,
+    updateCheckInterval: 1000 * 60 * 60 * 24, // 1 day
+    shouldNotifyInNpmScript: true
+  });
 
-if (notifier.update) {
-  console.log(chalk.blue('╭────────────────────────────────────────╮'));
-  console.log(chalk.blue('│ Update available: ') +
-    chalk.green(notifier.update.latest) +
-    chalk.blue(' (current: ' + notifier.update.current + ')') +
-    chalk.blue(' │'));
-  console.log(chalk.blue('│ Run ') +
-    chalk.cyan('npm install -g @ownlytics/mcprax') +
-    chalk.blue(' to update │'));
-  console.log(chalk.blue('╰────────────────────────────────────────╯'));
-  console.log();
+  // Only notify if we haven't already notified about this version
+  if (notifier.update && notifier.update.latest !== settings.lastNotifiedVersion) {
+    // Update last notified version
+    setUpdateSettings({ lastNotifiedVersion: notifier.update.latest });
+    
+    // Use the built-in notifier with custom styling
+    notifier.notify({
+      message: `Update available: ${pkg.version} → ${notifier.update.latest}\nRun ${chalk.cyan('rax update')} to update`,
+      boxenOpts: {
+        padding: 1,
+        margin: 1,
+        align: 'center',
+        borderColor: 'blue',
+        borderStyle: 'round'
+      }
+    });
+  }
 }
 
 // Ensure config directory exists
