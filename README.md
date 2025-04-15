@@ -1,6 +1,6 @@
 # mcprax - Model Context Protocol Rack Manager
 
-![Version](https://img.shields.io/badge/version-0.1.9-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Version](https://img.shields.io/badge/version-0.1.10-purple.svg) ![Status](https://img.shields.io/badge/status-beta-orange.svg) [![npm version](https://img.shields.io/npm/v/@ownlytics/mcprax?color=cb0000&label=npm&logo=npm)](https://www.npmjs.com/package/@ownlytics/mcprax) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://mariadb.com/bsl11/) ![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
 A powerful CLI tool for managing and deploying Model Context Protocol (MCP) servers to Claude Desktop as configurable "racks" - streamlining your development workflow.
 
@@ -80,6 +80,12 @@ rax mounted
 - `rax apply` - Apply active rack to Claude Desktop configuration
   - Use `--force` to apply even if rack has no servers
   - Use `--yes` to skip confirmation prompts
+  - Use `--restart` to automatically restart Claude Desktop after applying
+
+### Application Management
+
+- `rax reboot` - Restart Claude Desktop application
+  - Use `--force` to skip confirmation prompt
 
 ### Version Management
 
@@ -270,7 +276,7 @@ The Claude Desktop configuration is stored at:
 2. **Create purpose-specific racks** - Create different racks for different workflows
 3. **Use the `--force` flag with caution** - It will override configurations without confirmation
 4. **Check mounted servers before applying** - Use `rax mounted` to verify rack contents
-5. **Restart Claude Desktop after applying** - Changes may require a restart to take effect
+5. **Use `--restart` or `rax reboot`** - Use `rax apply --restart` or `rax reboot` to restart Claude Desktop after applying changes
 6. **Keep sensitive information secure** - API keys and tokens in MCP server configurations should be protected
 
 ## Troubleshooting
@@ -279,7 +285,7 @@ The Claude Desktop configuration is stored at:
 
 - **"No active rack set"** - Run `rax use <rackname>` to set an active rack
 - **"Server not found"** - Check if the server exists with `rax server list`
-- **Configuration not taking effect** - Restart Claude Desktop after applying changes
+- **Configuration not taking effect** - Use `rax reboot` to restart Claude Desktop after applying changes
 - **Permission issues** - Ensure you have write access to the Claude Desktop configuration directory
 - **MCP server errors** - Check Claude Desktop logs for server-specific error messages
 - **Update failures** - If `rax update` fails, you may need administrator privileges. Try running `npm install -g @ownlytics/mcprax` manually

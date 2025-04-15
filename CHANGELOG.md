@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2025-04-15
+
+### Added
+
+- Added `rax reboot` command to restart Claude Desktop application
+  - Supports both macOS and Windows platforms
+  - Includes confirmation prompt to prevent data loss (can be bypassed with `--force`)
+  - Automatically detects and terminates Claude Desktop processes
+  - Launches Claude Desktop from common installation locations
+- Added `--restart` option to `rax apply` command
+  - Automatically restarts Claude Desktop after applying configuration changes
+  - Eliminates need for manual restarts
+- Updated documentation to reflect new commands and options
+
 ## [0.1.9] - 2025-04-14
 
 ### Added
