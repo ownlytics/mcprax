@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.12] - 2025-04-16
+
+### Fixed
+
+- Fixed inconsistent behavior in `rax update` command
+  - Resolved issue where the command reported being on the latest version while simultaneously showing an update notification
+  - Improved consistency between update notification system and update command by sharing version information
+  - Added `--clear-cache` option to force fresh update checks when needed
+  - Enhanced version comparison using standardized semver checks
+  - Added cache clearing functionality to resolve potential stale cache issues
+
 ## [0.1.11] - 2025-04-16
 
 ### Fixed

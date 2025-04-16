@@ -32,8 +32,8 @@ if (settings.checkEnabled !== false) { // Default to true if not set
     shouldNotifyInNpmScript: true
   });
 
-  // Only notify if we haven't already notified about this version
-  if (notifier.update && notifier.update.latest !== settings.lastNotifiedVersion) {
+  // If we detect an update, always update the lastNotifiedVersion
+  if (notifier.update) {
     // Update last notified version
     setUpdateSettings({ lastNotifiedVersion: notifier.update.latest });
     
