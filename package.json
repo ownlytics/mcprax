@@ -1,6 +1,6 @@
 {
   "name": "@ownlytics/mcprax",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "A command-line tool for managing Model Control Protocol (MCP) servers and racks for Claude Desktop",
   "main": "lib/index.js",
   "bin": {

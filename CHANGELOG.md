@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.14] - 2025-04-16
+
+### Changed
+
+- Completely redesigned the update system architecture for improved reliability and maintainability
+  - Created a dedicated update service module that centralizes all update-related functionality
+  - Implemented proper separation of concerns with a single source of truth for update checks
+  - Standardized the update flow across all entry points in the application
+
+### Fixed
+
+- Fixed variable scope issues in the update system that were causing reference errors
+  - Resolved `ReferenceError: notifier is not defined` in the update command
+  - Properly managed variable lifecycle throughout asynchronous operations
+- Fixed inconsistent version management
+  - Eliminated redundant update notification systems
+  - Resolved race conditions when checking for updates from different entry points
+- Improved error handling throughout the update flow
+  - Added comprehensive error handling for update checks and installation
+  - Implemented safe default return values for error scenarios
+  - Added detailed error reporting for failed updates
+
+### Enhanced
+
+- Improved user experience during the update process
+  - Provided more consistent and accurate update notifications
+  - Enhanced feedback during update operations
+  - Added robust recovery from failed update checks
+- Enhanced update cache management
+  - Improved cache clearing to also reset stored version information
+  - Added better synchronization between cache and configuration settings
+- Refactored CLI commands to use the new update service
+  - Updated the version command for consistent behavior with update checks
+  - Improved the update command with better error handling and user feedback
+
 ## [0.1.13] - 2025-04-16
 
 ### Fixed
