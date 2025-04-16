@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.11] - 2025-04-16
+
+### Fixed
+
+- Fixed `rax reboot` command to handle missing Claude Desktop processes gracefully
+  - Added timeout mechanism to prevent hanging when processes can't be terminated
+  - Improved error handling for "No such process" errors on macOS and Windows
+  - Enhanced feedback messages for better user experience
+  - Fixed process counting logic to ensure command always completes
+- Fixed inconsistency in confirmation behavior between `rax reboot` and `rax apply --restart`
+  - Modified `rax apply --restart` to respect `--force` and `--yes` flags for consistency
+  - Added proper confirmation prompt when using `rax apply --restart` without force options
+- Fixed redundant help lines in `rax --help` and `rax` commands
+  - Streamlined help display logic to avoid duplicating content
+  - Limited ASCII banner display to main help only
+  - Improved help content organization and guidance
+
+### Enhanced
+
+- Enhanced `rax current` command to show more detailed information
+  - Added display of mounted servers with their status and configuration
+  - Included server commands and "Always Allow" patterns in the output
+  - Provided helpful tips for accessing more detailed information
+  - Improved feedback when no servers are mounted
+
 ## [0.1.10] - 2025-04-15
 
 ### Added

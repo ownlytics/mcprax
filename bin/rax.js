@@ -64,10 +64,8 @@ const asciiBanner = `
                                              v${pkg.version}
 `;
 
-// Flag to determine if we're showing help content
-const isShowingHelp = process.argv.includes('--help') ||
-                      process.argv.includes('-h') ||
-                      process.argv.length <= 2;
+// Flag to determine if we're showing main help (no command specified)
+const isShowingMainHelp = process.argv.length <= 2;
 
 // Set up program
 program
@@ -78,30 +76,35 @@ program
 // Add commands
 commandRouter(program);
 
-// Override the help output to include the banner
+// Override the help output to include the banner only for main help
 const originalHelp = program.help;
 program.help = function(cb) {
-  // Only show the banner if we're explicitly showing help
-  if (isShowingHelp) {
+  // Only show the banner for the main help (no command specified)
+  if (isShowingMainHelp) {
     console.log(chalk.cyan(asciiBanner));
   }
   return originalHelp.call(this, cb);
 };
 
-// Add examples section
-program.on('--help', () => {
-  console.log('');
-  console.log(chalk.yellow('Examples:'));
-  console.log('');
-  console.log('  $ rax create myproject    Create a new rack named "myproject"');
-  console.log('  $ rax server create api node server.js    Create a new server configuration');
-  console.log('  $ rax mount api          Add the "api" server to the active rack');
-  console.log('  $ rax apply              Apply the configuration to Claude Desktop');
-  console.log('');
-});
+// Add examples section only for main help
+if (isShowingMainHelp) {
+  program.on('--help', () => {
+    console.log('');
+    console.log(chalk.yellow('Common Examples:'));
+    console.log('');
+    console.log('  $ rax create myproject    Create a new rack named "myproject"');
+    console.log('  $ rax server create api node server.js    Create a new server configuration');
+    console.log('  $ rax mount api          Add the "api" server to the active rack');
+    console.log('  $ rax apply              Apply the configuration to Claude Desktop');
+    console.log('');
+    console.log(chalk.blue('For detailed help on a specific command, use:'));
+    console.log('  $ rax <command> --help');
+    console.log('');
+  });
+}
 
 // Display help when no command is provided
-if (process.argv.length <= 2) {
+if (isShowingMainHelp) {
   program.help();
 }
 
