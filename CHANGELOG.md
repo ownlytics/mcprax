@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.15] - 2025-04-16
+
+### Enhanced
+
+- Improved CLI output readability across all commands
+  - Added newline character before the first output line of each command
+  - Created visual separation between command input and output
+  - Enhanced user experience with consistent output formatting
+  - Applied buffer space for better readability of command results
+  - Implemented using a simple approach without centralizing output management
+
 ## [0.1.14] - 2025-04-16
 
 ### Changed
